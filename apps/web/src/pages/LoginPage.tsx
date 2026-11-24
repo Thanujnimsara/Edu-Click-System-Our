@@ -66,6 +66,17 @@ export const LoginPage: React.FC = () => {
     setCountdown(0);
 
     if (role === 'STUDENT') {
+      try {
+        const stored = localStorage.getItem('educlick_last_registered_student');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed.registrationNumber || parsed.username) {
+            setIdentifier(parsed.registrationNumber || parsed.username);
+            setPassword('Student@1234');
+            return;
+          }
+        }
+      } catch (e) {}
       setIdentifier('student_kamal');
       setPassword('Student@1234');
     } else if (role === 'TEACHER') {

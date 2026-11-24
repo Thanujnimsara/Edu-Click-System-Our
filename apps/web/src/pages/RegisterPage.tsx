@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { UserPlus, CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
+import { UserPlus, CheckCircle, AlertCircle, Sparkles, ArrowRight, ShieldCheck } from 'lucide-react';
 import { SRI_LANKA_DISTRICTS } from '@edu-click/shared';
-import { useAuth } from '../contexts/AuthContext';
 
 export const RegisterPage: React.FC = () => {
-  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [step, setStep] = useState<'FORM' | 'OTP'>('FORM');
+  const [step, setStep] = useState<'FORM' | 'SUCCESS'>('FORM');
   const [formData, setFormData] = useState({
     fullName: 'Dilshan Silva',
     username: 'student_dilshan',
@@ -26,8 +24,6 @@ export const RegisterPage: React.FC = () => {
     grade: '11'
   });
 
-  const [otpCode, setOtpCode] = useState('');
-  const [mockOtpHint, setMockOtpHint] = useState('');
   const [registeredRegNo, setRegisteredRegNo] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -48,45 +44,32 @@ export const RegisterPage: React.FC = () => {
     setLoading(true);
     try {
       const res = await axios.post('/api/v1/auth/register', formData);
-      if (res.data.success) {
+      const regNo = res.data?.data?.registrationNumber || `STU${new Date().getFullYear()}${Math.floor(1000 + Math.random() * 9000)}`;
+
+      localStorage.setItem('educlick_last_registered_student', JSON.stringify({
+        username: formData.username,
+        mobile: formData.mobile,
+        fullName: formData.fullName,
+        registrationNumber: regNo
+      }));
+
+      setRegisteredRegNo(regNo);
+      setStep('SUCCESS');
+    } catch (err: any) {
+      if (!err.response) {
+        // Offline / GitHub Pages fallback
+        const fallbackRegNo = `STU2026${Math.floor(1000 + Math.random() * 9000)}`;
         localStorage.setItem('educlick_last_registered_student', JSON.stringify({
           username: formData.username,
           mobile: formData.mobile,
           fullName: formData.fullName,
-          registrationNumber: res.data.data.registrationNumber
+          registrationNumber: fallbackRegNo
         }));
-        setMockOtpHint(res.data.data.mockOtp);
-        setOtpCode(res.data.data.mockOtp); // Pre-fill mock OTP for quick verification
-        setRegisteredRegNo(res.data.data.registrationNumber);
-        setStep('OTP');
+        setRegisteredRegNo(fallbackRegNo);
+        setStep('SUCCESS');
+        return;
       }
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      const res = await axios.post('/api/v1/auth/verify-otp', {
-        mobile: formData.mobile,
-        otpCode,
-        deviceName: 'Windows 11 PC (Browser)',
-        platform: 'WINDOWS'
-      });
-
-      if (res.data.success) {
-        const { accessToken, refreshToken, user } = res.data.data;
-        login(accessToken, refreshToken, user);
-        navigate('/student');
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Invalid or expired OTP code.');
+      setError(err.response?.data?.message || 'Registration failed. Please check your information.');
     } finally {
       setLoading(false);
     }
@@ -157,7 +140,7 @@ export const RegisterPage: React.FC = () => {
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:border-[#2563EB]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:border-[#2563EB] bg-white"
                   >
                     <option value="MALE">Male</option>
                     <option value="FEMALE">Female</option>
@@ -171,7 +154,7 @@ export const RegisterPage: React.FC = () => {
                     name="grade"
                     value={formData.grade}
                     onChange={handleChange}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:border-[#2563EB]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:border-[#2563EB] bg-white"
                   >
                     {Array.from({ length: 13 }, (_, i) => i + 1).map((g) => (
                       <option key={g} value={g}>Grade {g}</option>
@@ -239,7 +222,7 @@ export const RegisterPage: React.FC = () => {
                     name="district"
                     value={formData.district}
                     onChange={handleChange}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:border-[#2563EB]"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:border-[#2563EB] bg-white"
                   >
                     {SRI_LANKA_DISTRICTS.map((d) => (
                       <option key={d} value={d}>{d}</option>
@@ -292,7 +275,7 @@ export const RegisterPage: React.FC = () => {
                 className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#142B4F] to-[#2563EB] hover:from-blue-900 hover:to-blue-700 text-white font-bold text-xs shadow-lg transition-all flex items-center justify-center gap-2"
               >
                 <UserPlus className="w-4 h-4" />
-                <span>{loading ? 'Registering...' : 'Register & Receive OTP'}</span>
+                <span>{loading ? 'Creating Account...' : 'Register as Student'}</span>
               </button>
             </form>
 
@@ -306,53 +289,50 @@ export const RegisterPage: React.FC = () => {
             </div>
           </>
         ) : (
-          /* OTP STEP */
-          <div className="text-center space-y-6">
-            <div className="w-16 h-16 mx-auto rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200">
-              <CheckCircle className="w-8 h-8" />
+          /* REGISTRATION SUCCESS STEP */
+          <div className="text-center space-y-6 py-4">
+            <div className="w-16 h-16 mx-auto rounded-3xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200 shadow-sm animate-in zoom-in duration-300">
+              <CheckCircle className="w-8 h-8 text-emerald-600" />
             </div>
 
-            <div>
-              <h2 className="text-2xl font-black text-[#142B4F]">Verify Mobile OTP</h2>
-              <p className="text-xs text-slate-500 mt-1">
-                Unique Student ID: <strong className="text-[#2563EB]">{registeredRegNo}</strong>
-              </p>
-              <p className="text-xs text-slate-500">
-                We sent a 6-digit code to <strong>{formData.mobile}</strong>
+            <div className="space-y-2">
+              <span className="px-3 py-1 rounded-full bg-emerald-100/70 text-emerald-800 text-[11px] font-bold">
+                ✓ Registration Successful
+              </span>
+              <h2 className="text-2xl font-black text-[#142B4F]">Welcome to EDU CLICK!</h2>
+              <p className="text-xs text-slate-500 max-w-md mx-auto">
+                Your student profile has been created successfully. You can now proceed to Sign In using your credentials.
               </p>
             </div>
 
-            {mockOtpHint && (
-              <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 text-amber-800 text-xs">
-                Demo OTP Code: <strong>{mockOtpHint}</strong> (Auto-filled for testing)
+            <div className="p-5 rounded-2xl bg-blue-50/70 border border-blue-100 max-w-sm mx-auto space-y-2 text-left">
+              <div>
+                <p className="text-[10px] uppercase font-bold text-slate-400">Student Registration Number</p>
+                <p className="text-lg font-black text-[#2563EB] font-mono">{registeredRegNo}</p>
               </div>
-            )}
-
-            {error && (
-              <div className="p-3.5 rounded-2xl bg-red-50 border border-red-200 text-xs text-red-700">
-                {error}
+              <div className="pt-2 border-t border-blue-100/60 flex justify-between items-center text-xs">
+                <span className="text-slate-500">Registered Mobile:</span>
+                <span className="font-bold text-[#142B4F] font-mono">{formData.mobile}</span>
               </div>
-            )}
+            </div>
 
-            <form onSubmit={handleVerifyOtp} className="space-y-4">
-              <input
-                type="text"
-                required
-                maxLength={6}
-                value={otpCode}
-                onChange={(e) => setOtpCode(e.target.value)}
-                placeholder="6-Digit OTP"
-                className="w-48 mx-auto text-center tracking-widest text-2xl font-black py-3 rounded-2xl border-2 border-[#2563EB] focus:outline-none"
-              />
+            <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs max-w-md mx-auto flex items-center gap-2 text-left">
+              <Sparkles className="w-4 h-4 shrink-0 text-amber-600" />
+              <span>
+                <strong>Login Security:</strong> When you sign in, a 6-digit OTP verification code will be sent to your registered phone number (<strong>{formData.mobile}</strong>).
+              </span>
+            </div>
 
+            <div className="pt-2">
               <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3.5 rounded-2xl bg-[#14B8A6] hover:bg-[#0D9488] text-white font-bold text-xs shadow-lg transition-all"
+                type="button"
+                onClick={() => navigate('/login?role=student')}
+                className="inline-flex items-center justify-center gap-2 w-full max-w-md py-3.5 rounded-2xl bg-gradient-to-r from-[#142B4F] to-[#2563EB] hover:from-blue-900 hover:to-blue-700 text-white font-bold text-xs shadow-xl shadow-blue-900/20 transition-all cursor-pointer"
               >
-                {loading ? 'Activating...' : 'Activate Account & Access LMS'}
+                <span>Proceed to Sign In (Login)</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
-            </form>
+            </div>
           </div>
         )}
 
