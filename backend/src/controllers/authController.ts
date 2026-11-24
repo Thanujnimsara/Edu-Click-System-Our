@@ -174,40 +174,48 @@ export async function verifyOTP(req: Request, res: Response): Promise<void> {
   }
 }
 
-export async function requestStudentLoginOtp(req: Request, res: Response): Promise<void> {
+export async function requestLoginOtp(req: Request, res: Response): Promise<void> {
   try {
-    const { identifier, password } = req.body;
+    const { identifier, password, role } = req.body;
 
     if (!identifier) {
-      res.status(400).json({ success: false, message: 'Please provide your student username, registration number, or mobile.' });
+      res.status(400).json({ success: false, message: 'Please provide your username, registration number, or mobile.' });
       return;
     }
 
-    // Match student user
-    const users = await db.query(
-      `SELECT u.id, u.username, u.email, u.mobile, u.password_hash, u.role, u.is_active,
-              s.registration_number, s.full_name as student_name, s.grade
-       FROM users u
-       LEFT JOIN students s ON u.id = s.user_id
-       WHERE (u.username = ? OR u.email = ? OR u.mobile = ? OR s.registration_number = ?) AND u.role = 'STUDENT'`,
-      [identifier, identifier, identifier, identifier]
-    );
+    // Match user by identifier and optional role
+    let query = `
+      SELECT u.id, u.username, u.email, u.mobile, u.password_hash, u.role, u.is_active,
+             s.registration_number, s.full_name as student_name, s.grade,
+             t.teacher_id, t.full_name as teacher_name
+      FROM users u
+      LEFT JOIN students s ON u.id = s.user_id
+      LEFT JOIN teachers t ON u.id = t.user_id
+      WHERE (u.username = ? OR u.email = ? OR u.mobile = ? OR s.registration_number = ? OR t.teacher_id = ?)
+    `;
+    const params: any[] = [identifier, identifier, identifier, identifier, identifier];
+    if (role) {
+      query += ` AND u.role = ?`;
+      params.push(role);
+    }
+
+    const users = await db.query(query, params);
 
     if (users.length === 0) {
-      res.status(404).json({ success: false, message: 'Student account not found with the provided details.' });
+      res.status(404).json({ success: false, message: 'Account not found with the provided details.' });
       return;
     }
 
     const user = users[0];
     if (!user.is_active) {
-      res.status(403).json({ success: false, message: 'Student account is deactivated. Please contact administration.' });
+      res.status(403).json({ success: false, message: 'Account is deactivated. Please contact administration.' });
       return;
     }
 
     if (password) {
       const isMatch = await bcrypt.compare(password, user.password_hash);
       if (!isMatch) {
-        res.status(401).json({ success: false, message: 'Incorrect password. Please enter the valid student password.' });
+        res.status(401).json({ success: false, message: 'Incorrect password. Please enter the valid password.' });
         return;
       }
     }
@@ -220,7 +228,7 @@ export async function requestStudentLoginOtp(req: Request, res: Response): Promi
       [uuidv4(), user.mobile, otp, 'LOGIN', otpExpires]
     );
 
-    console.log(`[SMS-MOCK] Student Login OTP sent to ${user.mobile} (${user.username}): ${otp}`);
+    console.log(`[SMS-MOCK] ${user.role} Login OTP sent to ${user.mobile} (${user.username}): ${otp}`);
 
     const mobileStr = user.mobile || '';
     const maskedMobile = mobileStr.length >= 7
@@ -233,8 +241,10 @@ export async function requestStudentLoginOtp(req: Request, res: Response): Promi
       data: {
         mobile: user.mobile,
         maskedMobile,
-        studentName: user.student_name || user.username,
+        role: user.role,
+        fullName: user.role === 'STUDENT' ? user.student_name : (user.role === 'TEACHER' ? user.teacher_name : user.username),
         registrationNumber: user.registration_number,
+        teacherId: user.teacher_id,
         mockOtp: otp // Included for testing and developer preview
       }
     });
@@ -243,6 +253,8 @@ export async function requestStudentLoginOtp(req: Request, res: Response): Promi
     res.status(500).json({ success: false, message: error.message });
   }
 }
+
+export const requestStudentLoginOtp = requestLoginOtp;
 
 export async function login(req: Request, res: Response): Promise<void> {
   try {
@@ -282,8 +294,8 @@ export async function login(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    // If student and OTP code provided, verify OTP
-    if (user.role === 'STUDENT' && otpCode) {
+    // If student or teacher and OTP code provided, verify OTP
+    if ((user.role === 'STUDENT' || user.role === 'TEACHER') && otpCode) {
       const otpRows = await db.query(
         'SELECT id, otp_code, expires_at, is_used FROM otp_verifications WHERE mobile = ? AND otp_code = ? AND purpose = ? AND is_used = 0 ORDER BY created_at DESC LIMIT 1',
         [user.mobile, otpCode, 'LOGIN']

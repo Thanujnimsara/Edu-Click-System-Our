@@ -28,7 +28,7 @@ export const LoginPage: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Student OTP Verification States
+  // OTP Verification States (Used for both STUDENT and TEACHER)
   const [otpCode, setOtpCode] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [otpLoading, setOtpLoading] = useState(false);
@@ -36,6 +36,8 @@ export const LoginPage: React.FC = () => {
   const [sentMobile, setSentMobile] = useState('');
   const [countdown, setCountdown] = useState(0);
   const [smsAlert, setSmsAlert] = useState<{ code: string; mobile: string; time: string } | null>(null);
+
+  const requiresOtp = activeRole === 'STUDENT' || activeRole === 'TEACHER';
 
   useEffect(() => {
     const roleParam = searchParams.get('role')?.toUpperCase();
@@ -89,6 +91,17 @@ export const LoginPage: React.FC = () => {
   };
 
   const getRegisteredMobileInfo = () => {
+    if (activeRole === 'TEACHER') {
+      if (identifier.toLowerCase().includes('kasun') || identifier === 'TCH20260001' || identifier === '0712345678') {
+        return { raw: '0712345678', masked: '071 •••• 678', name: 'Kasun Jayawardena (Teacher)' };
+      }
+      if (/^0\d{9}$/.test(identifier)) {
+        return { raw: identifier, masked: `${identifier.slice(0, 3)} •••• ${identifier.slice(-3)}`, name: 'Teacher' };
+      }
+      return { raw: '0712345678', masked: '071 •••• 678', name: 'Teacher Account' };
+    }
+
+    // Student role
     if (identifier.toLowerCase().includes('kamal') || identifier === 'STU20260001') {
       return { raw: '0751112233', masked: '075 •••• 233', name: 'Kamal Perera' };
     }
@@ -122,9 +135,10 @@ export const LoginPage: React.FC = () => {
     const info = getRegisteredMobileInfo();
 
     try {
-      const res = await axios.post('/api/v1/auth/student-login-otp', {
+      const res = await axios.post('/api/v1/auth/login-otp', {
         identifier,
-        password
+        password,
+        role: activeRole
       });
 
       if (res.data.success) {
@@ -143,7 +157,7 @@ export const LoginPage: React.FC = () => {
       }
     } catch (err: any) {
       if (err.response?.status === 401 || err.response?.status === 404) {
-        setError(err.response?.data?.message || 'Invalid student credentials. Please verify your details.');
+        setError(err.response?.data?.message || `Invalid ${activeRole.toLowerCase()} credentials. Please verify your details.`);
         setOtpLoading(false);
         return;
       }
@@ -168,7 +182,7 @@ export const LoginPage: React.FC = () => {
     e.preventDefault();
     setError('');
 
-    if (activeRole === 'STUDENT') {
+    if (requiresOtp) {
       // Step 1: If OTP not yet sent, trigger OTP send
       if (!otpSent) {
         await handleSendOtp();
@@ -177,7 +191,7 @@ export const LoginPage: React.FC = () => {
 
       // Step 2: Ensure 6 digits entered
       if (otpCode.trim().length !== 6) {
-        setError('Please enter the 6-digit OTP code sent to your registered phone number.');
+        setError(`Please enter the 6-digit OTP code sent to your registered ${activeRole.toLowerCase()} phone number.`);
         return;
       }
 
@@ -195,7 +209,7 @@ export const LoginPage: React.FC = () => {
       const res = await axios.post('/api/v1/auth/login', {
         identifier,
         password,
-        otpCode: activeRole === 'STUDENT' ? otpCode.trim() : undefined,
+        otpCode: requiresOtp ? otpCode.trim() : undefined,
         deviceName: sysInfo.deviceName,
         platform: sysInfo.platform
       });
@@ -219,13 +233,14 @@ export const LoginPage: React.FC = () => {
       // Fallback for static GitHub Pages preview
       const info = getRegisteredMobileInfo();
       const mockUser = {
-        id: 'kamal-uuid-001',
+        id: activeRole === 'STUDENT' ? 'kamal-uuid-001' : (activeRole === 'TEACHER' ? 'kasun-uuid-001' : 'admin-uuid-001'),
         username: identifier,
-        email: 'kamal@gmail.com',
+        email: activeRole === 'TEACHER' ? 'kasun@educlick.lk' : (activeRole === 'STUDENT' ? 'kamal@gmail.com' : 'admin@educlick.lk'),
         mobile: info.raw,
         role: activeRole,
         fullName: activeRole === 'STUDENT' ? info.name : (activeRole === 'TEACHER' ? 'Kasun Jayawardena' : 'System Administrator'),
         registrationNumber: activeRole === 'STUDENT' ? 'STU20260001' : undefined,
+        teacherId: activeRole === 'TEACHER' ? 'TCH20260001' : undefined,
         grade: activeRole === 'STUDENT' ? 10 : undefined,
         preferredLanguage: 'en'
       };
@@ -298,7 +313,7 @@ export const LoginPage: React.FC = () => {
         )}
 
         {/* Realistic SMS Notification Banner (Simulation) */}
-        {smsAlert && activeRole === 'STUDENT' && (
+        {smsAlert && requiresOtp && (
           <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-blue-500/10 border border-emerald-300 text-xs text-slate-800 space-y-2 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 font-bold text-emerald-800">
@@ -309,7 +324,7 @@ export const LoginPage: React.FC = () => {
             </div>
             <div className="p-2.5 rounded-xl bg-white/90 border border-emerald-200 font-mono text-[11px] text-slate-700 flex items-center justify-between">
               <span>
-                EDU CLICK OTP: <strong className="text-base font-black text-[#2563EB] tracking-wider">{smsAlert.code}</strong>
+                EDU CLICK {activeRole} OTP: <strong className="text-base font-black text-[#2563EB] tracking-wider">{smsAlert.code}</strong>
               </span>
               <button
                 type="button"
@@ -330,7 +345,11 @@ export const LoginPage: React.FC = () => {
           {/* Identifier Input */}
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-1">
-              {activeRole === 'STUDENT' ? 'Username, Reg No (e.g. STU20260001), or Mobile' : 'Username or Email'}
+              {activeRole === 'STUDENT'
+                ? 'Username, Reg No (e.g. STU20260001), or Mobile'
+                : activeRole === 'TEACHER'
+                  ? 'Username, Teacher ID (e.g. TCH20260001), or Mobile'
+                  : 'Username or Email'}
             </label>
             <input
               type="text"
@@ -361,15 +380,17 @@ export const LoginPage: React.FC = () => {
             />
           </div>
 
-          {/* Student Registered Mobile & OTP Section */}
-          {activeRole === 'STUDENT' && (
+          {/* Registered Mobile & OTP Section (For Student and Teacher) */}
+          {requiresOtp && (
             <div className="space-y-3 pt-1">
               {/* Registered Phone Info Card */}
               <div className="p-3.5 rounded-2xl bg-blue-50/70 border border-blue-100 flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
                   <Smartphone className="w-4 h-4 text-[#2563EB]" />
                   <div>
-                    <p className="text-[10px] text-slate-500 font-semibold">Registered Student Mobile</p>
+                    <p className="text-[10px] text-slate-500 font-semibold">
+                      Registered {activeRole === 'TEACHER' ? 'Teacher' : 'Student'} Mobile
+                    </p>
                     <p className="font-mono font-bold text-[#142B4F]">{registeredInfo.masked}</p>
                   </div>
                 </div>
@@ -444,10 +465,10 @@ export const LoginPage: React.FC = () => {
             type="submit"
             disabled={
               loading ||
-              (activeRole === 'STUDENT' && otpSent && otpCode.trim().length !== 6)
+              (requiresOtp && otpSent && otpCode.trim().length !== 6)
             }
             className={`w-full py-3.5 rounded-2xl font-bold text-xs transition-all flex items-center justify-center gap-2 ${
-              activeRole === 'STUDENT'
+              requiresOtp
                 ? otpSent
                   ? otpCode.trim().length === 6
                     ? 'bg-gradient-to-r from-[#142B4F] to-[#2563EB] hover:from-blue-900 hover:to-blue-700 text-white shadow-xl shadow-blue-900/30 cursor-pointer animate-pulse'
@@ -460,12 +481,12 @@ export const LoginPage: React.FC = () => {
             <span>
               {loading
                 ? 'Authenticating...'
-                : activeRole === 'STUDENT'
+                : requiresOtp
                   ? otpSent
                     ? otpCode.trim().length === 6
-                      ? 'Sign In as STUDENT'
+                      ? `Sign In as ${activeRole}`
                       : 'Enter 6-Digit OTP to Sign In'
-                    : 'Send OTP & Sign In as STUDENT'
+                    : `Send OTP & Sign In as ${activeRole}`
                   : `Sign In as ${activeRole}`}
             </span>
           </button>
