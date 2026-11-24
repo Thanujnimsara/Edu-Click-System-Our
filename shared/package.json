@@ -1,0 +1,10 @@
+{
+  "name": "@edu-click/shared",
+  "version": "4.0.0",
+  "private": true,
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "build": "tsc"
+  }
+}

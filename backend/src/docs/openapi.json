@@ -1,0 +1,282 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "EDU CLICK – Complete Cross-Platform LMS REST API",
+    "description": "Centralized backend REST API for Sri Lanka's Grade 1-13 Online Learning Management System. Supports Students, Teachers, and Administrators across Android, iOS, Windows, macOS, and Web.",
+    "version": "4.0.0",
+    "contact": {
+      "name": "EDU CLICK Engineering Team",
+      "email": "support@educlick.lk"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000/api/v1",
+      "description": "Local Development Server"
+    },
+    {
+      "url": "https://api.educlick.lk/api/v1",
+      "description": "Production Cloud Server"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Platform Health & Info",
+        "responses": {
+          "200": { "description": "System online status and version details" }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "summary": "Student Registration",
+        "description": "Registers new student with parent contacts, generates unique registration number (STU2026xxxx), and sends OTP.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fullName": { "type": "string" },
+                  "username": { "type": "string" },
+                  "dateOfBirth": { "type": "string", "format": "date" },
+                  "gender": { "type": "string", "enum": ["MALE", "FEMALE", "OTHER"] },
+                  "parentName": { "type": "string" },
+                  "parentMobile": { "type": "string" },
+                  "mobile": { "type": "string" },
+                  "email": { "type": "string", "format": "email" },
+                  "password": { "type": "string" },
+                  "address": { "type": "string" },
+                  "district": { "type": "string" },
+                  "grade": { "type": "integer", "minimum": 1, "maximum": 13 }
+                },
+                "required": ["fullName", "username", "mobile", "email", "password", "grade"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Student registration initiated and OTP dispatched" },
+          "409": { "description": "Duplicate username, mobile or email" }
+        }
+      }
+    },
+    "/auth/verify-otp": {
+      "post": {
+        "summary": "Verify 6-Digit Mobile OTP",
+        "description": "Validates mobile OTP, activates user account, issues JWT access token and rotating refresh token.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mobile": { "type": "string" },
+                  "otpCode": { "type": "string" },
+                  "deviceName": { "type": "string" },
+                  "platform": { "type": "string" }
+                },
+                "required": ["mobile", "otpCode"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Account verified and active session created" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Universal Multi-Role Sign In",
+        "description": "Authenticates Students, Teachers, and Administrators. Creates active device session.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "identifier": { "type": "string", "description": "Username, Email, Mobile, or Reg No" },
+                  "password": { "type": "string" },
+                  "deviceName": { "type": "string" },
+                  "platform": { "type": "string" }
+                },
+                "required": ["identifier", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Login successful. Returns JWT access token and user role." }
+        }
+      }
+    },
+    "/auth/devices": {
+      "get": {
+        "summary": "Active Logged-In Device Sessions",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "List of active user sessions with platform and IP." }
+        }
+      }
+    },
+    "/auth/devices/{sessionId}": {
+      "delete": {
+        "summary": "Revoke Specific Device Session",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "sessionId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Device session revoked successfully." }
+        }
+      }
+    },
+    "/grades": {
+      "get": {
+        "summary": "List Sri Lanka National Curriculum Grades 1–13",
+        "responses": {
+          "200": { "description": "All 13 grades categorized by Primary, Junior, O/L, and A/L." }
+        }
+      }
+    },
+    "/classes": {
+      "get": {
+        "summary": "Search & Filter Classes",
+        "parameters": [
+          { "name": "grade", "in": "query", "schema": { "type": "integer" } },
+          { "name": "subjectId", "in": "query", "schema": { "type": "string" } },
+          { "name": "isFree", "in": "query", "schema": { "type": "boolean" } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "List of matching available classes." }
+        }
+      }
+    },
+    "/enrollments": {
+      "post": {
+        "summary": "Enroll in Class",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "classId": { "type": "string" } },
+                "required": ["classId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Enrollment completed successfully." },
+          "409": { "description": "Student is already enrolled." }
+        }
+      }
+    },
+    "/payments/bank-slip": {
+      "post": {
+        "summary": "Submit Bank Deposit Slip",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "classId": { "type": "string" },
+                  "bankAccountId": { "type": "string" },
+                  "referenceNumber": { "type": "string" },
+                  "depositDate": { "type": "string", "format": "date" },
+                  "slipImageUrl": { "type": "string" }
+                },
+                "required": ["classId", "referenceNumber", "depositDate"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Slip queued for administrator verification." }
+        }
+      }
+    },
+    "/admin/bank-slips/{submissionId}/verify": {
+      "patch": {
+        "summary": "Verify Bank Deposit Slip",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "submissionId", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "action": { "type": "string", "enum": ["APPROVED", "REJECTED"] },
+                  "notes": { "type": "string" }
+                },
+                "required": ["action"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Payment confirmed, receipt issued, and teacher commission assigned." }
+        }
+      }
+    },
+    "/exams/{id}": {
+      "get": {
+        "summary": "Fetch Examination Details & Questions",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Paper metadata and question list." }
+        }
+      }
+    },
+    "/exams/submit": {
+      "post": {
+        "summary": "Submit Examination for Automated Marking",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "paperId": { "type": "string" },
+                  "answers": { "type": "object", "additionalProperties": { "type": "string" } }
+                },
+                "required": ["paperId", "answers"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Objective grading completed. Returns score, percentage and letter grade." }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

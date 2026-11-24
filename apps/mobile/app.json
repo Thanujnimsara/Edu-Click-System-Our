@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "EDU CLICK",
+    "slug": "edu-click-lms",
+    "version": "4.0.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#142B4F"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "lk.educlick.lms",
+      "infoPlist": {
+        "NSCameraUsageDescription": "EDU CLICK requires camera access for interactive live classrooms and bank deposit slip upload.",
+        "NSMicrophoneUsageDescription": "EDU CLICK requires microphone access to speak with your instructor during live classes."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#142B4F"
+      },
+      "package": "lk.educlick.lms",
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "POST_NOTIFICATIONS",
+        "WAKE_LOCK"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "edu-click-lms-sri-lanka"
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="iconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#142B4F"/>
+      <stop offset="50%" stop-color="#2563EB"/>
+      <stop offset="100%" stop-color="#14B8A6"/>
+    </linearGradient>
+    <filter id="iconShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#142B4F" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <rect width="120" height="120" rx="28" fill="url(#iconGrad)"/>
+  
+  <!-- Stylized Academic Cap -->
+  <path d="M60 28 L98 46 L60 64 L22 46 Z" fill="#FFFFFF" filter="url(#iconShadow)"/>
+  <path d="M60 64 L98 46 L98 52 L60 70 L22 52 L22 46 Z" fill="#E2E8F0"/>
+  
+  <!-- Cap Lower Arch -->
+  <path d="M34 56 L34 76 C34 86 86 86 86 76 L86 56 C78 62 69 66 60 66 C51 66 42 62 34 56 Z" fill="#FFFFFF" opacity="0.95"/>
+  
+  <!-- Dynamic Digital Pointer Click -->
+  <path d="M80 72 L102 94 L90 95 L97 108 L88 112 L82 99 L72 105 Z" fill="#14B8A6" stroke="#FFFFFF" stroke-width="2.5"/>
+  
+  <!-- Sparkles -->
+  <circle cx="28" cy="34" r="3.5" fill="#14B8A6"/>
+  <circle cx="92" cy="32" r="4" fill="#38BDF8"/>
+</svg>

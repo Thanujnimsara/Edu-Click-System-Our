@@ -1,0 +1,30 @@
+{
+  "name": "edu-click-monorepo",
+  "version": "4.0.0",
+  "private": true,
+  "description": "EDU CLICK - Complete Grade 1-13 Multilingual Online Learning Management System",
+  "workspaces": [
+    "apps/*",
+    "backend",
+    "shared"
+  ],
+  "scripts": {
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:web": "npm --prefix apps/web run dev",
+    "build:web": "npm --prefix apps/web run build",
+    "build:backend": "npm --prefix backend run build",
+    "db:migrate": "npm --prefix backend run db:migrate",
+    "db:seed": "npm --prefix backend run db:seed",
+    "test": "npm --prefix backend run test"
+  },
+  "keywords": [
+    "edtech",
+    "lms",
+    "sri-lanka",
+    "grade1-13",
+    "cross-platform",
+    "edu-click"
+  ],
+  "author": "EDU CLICK Team",
+  "license": "Commercial"
+}
