@@ -49,6 +49,12 @@ export const RegisterPage: React.FC = () => {
     try {
       const res = await axios.post('/api/v1/auth/register', formData);
       if (res.data.success) {
+        localStorage.setItem('educlick_last_registered_student', JSON.stringify({
+          username: formData.username,
+          mobile: formData.mobile,
+          fullName: formData.fullName,
+          registrationNumber: res.data.data.registrationNumber
+        }));
         setMockOtpHint(res.data.data.mockOtp);
         setOtpCode(res.data.data.mockOtp); // Pre-fill mock OTP for quick verification
         setRegisteredRegNo(res.data.data.registrationNumber);

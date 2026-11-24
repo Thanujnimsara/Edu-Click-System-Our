@@ -89,6 +89,31 @@
         }
       }
     },
+    "/auth/student-login-otp": {
+      "post": {
+        "summary": "Request Student Login OTP",
+        "description": "Validates student credentials, identifies registered mobile, generates 6-digit OTP, and records in database for login 2FA verification.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "identifier": { "type": "string" },
+                  "password": { "type": "string" }
+                },
+                "required": ["identifier"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "OTP dispatched to registered mobile" },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    },
     "/auth/login": {
       "post": {
         "summary": "Universal Multi-Role Sign In",

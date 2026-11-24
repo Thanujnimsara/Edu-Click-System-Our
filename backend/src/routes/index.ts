@@ -32,6 +32,7 @@ router.get('/docs', (req, res) => {
 // 2. Authentication Routes
 router.post('/auth/register', authCtrl.registerStudent);
 router.post('/auth/verify-otp', authCtrl.verifyOTP);
+router.post('/auth/student-login-otp', authCtrl.requestStudentLoginOtp);
 router.post('/auth/login', authCtrl.login);
 router.post('/auth/refresh-token', authCtrl.refreshToken);
 router.post('/auth/logout', authenticate, authCtrl.logout);
