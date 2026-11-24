@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%">
+  <defs>
+    <linearGradient id="splashBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B132B"/>
+      <stop offset="50%" stop-color="#142B4F"/>
+      <stop offset="100%" stop-color="#172554"/>
+    </linearGradient>
+    <radialGradient id="splashGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2563EB" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#142B4F" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#splashBg)"/>
+  <circle cx="960" cy="540" r="500" fill="url(#splashGlow)"/>
+
+  <!-- Grid lines background -->
+  <g stroke="#2563EB" stroke-opacity="0.1" stroke-width="1">
+    <line x1="0" y1="270" x2="1920" y2="270"/>
+    <line x1="0" y1="540" x2="1920" y2="540"/>
+    <line x1="0" y1="810" x2="1920" y2="810"/>
+    <line x1="480" y1="0" x2="480" y2="1080"/>
+    <line x1="960" y1="0" x2="960" y2="1080"/>
+    <line x1="1440" y1="0" x2="1440" y2="1080"/>
+  </g>
+
+  <!-- Center Emblem -->
+  <g transform="translate(860, 360)">
+    <circle cx="100" cy="100" r="100" fill="#142B4F" stroke="#2563EB" stroke-width="4"/>
+    <path d="M100 45 L165 78 L100 110 L35 78 Z" fill="#FFFFFF"/>
+    <path d="M58 92 L58 125 C58 145 142 145 142 125 L142 92 C128 102 114 107 100 107 C86 107 72 102 58 92 Z" fill="#E2E8F0"/>
+    <path d="M130 115 L170 155 L150 157 L162 182 L148 190 L136 165 L118 175 Z" fill="#14B8A6" stroke="#FFFFFF" stroke-width="3"/>
+  </g>
+
+  <!-- Title & Tagline -->
+  <text x="960" y="630" font-family="'Inter', system-ui, sans-serif" font-weight="900" font-size="64" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">
+    EDU <tspan fill="#38BDF8">CLICK</tspan>
+  </text>
+  
+  <text x="960" y="680" font-family="'Inter', system-ui, sans-serif" font-weight="700" font-size="22" fill="#14B8A6" text-anchor="middle" letter-spacing="4">
+    ONE PLATFORM. EVERY DEVICE. EVERY STUDENT.
+  </text>
+
+  <text x="960" y="730" font-family="'Inter', system-ui, sans-serif" font-weight="400" font-size="16" fill="#94A3B8" text-anchor="middle" letter-spacing="1">
+    Web • Android • iOS • Windows • macOS • Linux
+  </text>
+
+  <!-- Loading Bar Indicator -->
+  <g transform="translate(760, 800)">
+    <rect width="400" height="6" rx="3" fill="#1E293B"/>
+    <rect width="180" height="6" rx="3" fill="#14B8A6"/>
+  </g>
+</svg>
