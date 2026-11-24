@@ -4,17 +4,16 @@
     <meta charset="utf-8">
     <title>EDU CLICK – Redirecting...</title>
     <script type="text/javascript">
-      // Single Page Application redirect script for GitHub Pages
-      // Encodes path and query parameters into a search string so index.html can restore the route
-      var pathSegmentsToKeep = 1;
+      // GitHub Pages SPA HashRouter Redirect
       var l = window.location;
-      l.replace(
-        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-        l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
-        l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
-        (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-        l.hash
-      );
+      var repo = '/Edu-Click-System-Our';
+      var path = l.pathname;
+      var cleanPath = path.indexOf(repo) === 0 ? path.substring(repo.length) : path;
+      if (!cleanPath || cleanPath === '/') cleanPath = '';
+      if (cleanPath && cleanPath.charAt(0) !== '/') cleanPath = '/' + cleanPath;
+      
+      var target = l.protocol + '//' + l.host + repo + '/#' + cleanPath + l.search + l.hash;
+      window.location.replace(target);
     </script>
   </head>
   <body>

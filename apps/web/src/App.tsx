@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
@@ -111,9 +111,9 @@ const AppLayout: React.FC = () => {
 export const App: React.FC = () => {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <HashRouter>
         <AppLayout />
-      </BrowserRouter>
+      </HashRouter>
     </AuthProvider>
   );
 };
