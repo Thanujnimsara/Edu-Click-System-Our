@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { 
   BookOpen, Calendar, Video, CreditCard, Smartphone, CheckCircle, 
@@ -14,7 +14,18 @@ type StudentTab = 'OVERVIEW' | 'CLASSES' | 'TIMETABLE' | 'EXAMS' | 'PAYMENTS' | 
 
 export const StudentDashboard: React.FC = () => {
   const { user, logout, updateLanguage } = useAuth();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState<StudentTab>('OVERVIEW');
+
+  useEffect(() => {
+    if (location.pathname.endsWith('/classes')) setActiveTab('CLASSES');
+    else if (location.pathname.endsWith('/timetable')) setActiveTab('TIMETABLE');
+    else if (location.pathname.endsWith('/results') || location.pathname.endsWith('/exams')) setActiveTab('EXAMS');
+    else if (location.pathname.endsWith('/payments')) setActiveTab('PAYMENTS');
+    else if (location.pathname.endsWith('/devices')) setActiveTab('DEVICES');
+    else if (location.pathname.endsWith('/profile')) setActiveTab('PROFILE');
+    else if (location.pathname === '/student') setActiveTab('OVERVIEW');
+  }, [location.pathname]);
   const [enrolledClasses, setEnrolledClasses] = useState<any[]>([]);
   const [timetable, setTimetable] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);

@@ -61,42 +61,27 @@ const AppLayout: React.FC = () => {
             <Route path="/exams" element={<ExamsPage />} />
 
             {/* Student Routes */}
-            <Route
-              path="/student"
-              element={
-                <ProtectedRoute allowedRoles={['STUDENT']}>
-                  <StudentDashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/student/timetable"
-              element={
-                <ProtectedRoute allowedRoles={['STUDENT', 'TEACHER']}>
-                  <TimetablePage />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/student" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentDashboard /></ProtectedRoute>} />
+            <Route path="/student/classes" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentDashboard /></ProtectedRoute>} />
+            <Route path="/student/timetable" element={<ProtectedRoute allowedRoles={['STUDENT', 'TEACHER']}><TimetablePage /></ProtectedRoute>} />
+            <Route path="/student/results" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentDashboard /></ProtectedRoute>} />
+            <Route path="/student/payments" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentDashboard /></ProtectedRoute>} />
+            <Route path="/student/devices" element={<ProtectedRoute allowedRoles={['STUDENT']}><StudentDashboard /></ProtectedRoute>} />
 
             {/* Teacher Routes */}
-            <Route
-              path="/teacher"
-              element={
-                <ProtectedRoute allowedRoles={['TEACHER']}>
-                  <TeacherDashboard />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/teacher" element={<ProtectedRoute allowedRoles={['TEACHER']}><TeacherDashboard /></ProtectedRoute>} />
+            <Route path="/teacher/classes" element={<ProtectedRoute allowedRoles={['TEACHER']}><TeacherDashboard /></ProtectedRoute>} />
+            <Route path="/teacher/schedule" element={<ProtectedRoute allowedRoles={['TEACHER']}><TeacherDashboard /></ProtectedRoute>} />
+            <Route path="/teacher/attendance" element={<ProtectedRoute allowedRoles={['TEACHER']}><TeacherDashboard /></ProtectedRoute>} />
+            <Route path="/teacher/commissions" element={<ProtectedRoute allowedRoles={['TEACHER']}><TeacherDashboard /></ProtectedRoute>} />
+            <Route path="/teacher/devices" element={<ProtectedRoute allowedRoles={['TEACHER']}><TeacherDashboard /></ProtectedRoute>} />
 
             {/* Admin Routes */}
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute allowedRoles={['ADMIN']}>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/admin" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/admin/verifications" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/admin/teachers" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/admin/classes" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/admin/audit" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminDashboard /></ProtectedRoute>} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

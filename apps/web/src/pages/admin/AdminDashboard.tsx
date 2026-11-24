@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { 
   Users, BookOpen, DollarSign, CheckCircle, XCircle, 
@@ -11,7 +12,17 @@ type AdminTab = 'OVERVIEW' | 'VERIFICATIONS' | 'TEACHERS' | 'STUDENTS' | 'SUBJEC
 
 export const AdminDashboard: React.FC = () => {
   const { user } = useAuth();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState<AdminTab>('OVERVIEW');
+
+  useEffect(() => {
+    if (location.pathname.endsWith('/verifications')) setActiveTab('VERIFICATIONS');
+    else if (location.pathname.endsWith('/teachers')) setActiveTab('TEACHERS');
+    else if (location.pathname.endsWith('/classes') || location.pathname.endsWith('/subjects')) setActiveTab('SUBJECTS');
+    else if (location.pathname.endsWith('/audit') || location.pathname.endsWith('/settings')) setActiveTab('SETTINGS');
+    else if (location.pathname.endsWith('/reports')) setActiveTab('REPORTS');
+    else if (location.pathname === '/admin') setActiveTab('OVERVIEW');
+  }, [location.pathname]);
   const [stats, setStats] = useState<any | null>(null);
   const [pendingSlips, setPendingSlips] = useState<any[]>([]);
   const [teachers, setTeachers] = useState<any[]>([]);

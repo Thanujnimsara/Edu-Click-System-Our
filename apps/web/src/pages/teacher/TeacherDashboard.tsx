@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { 
   BookOpen, Users, DollarSign, Calendar, CheckCircle, 
@@ -12,7 +13,17 @@ type TeacherTab = 'OVERVIEW' | 'CLASSES' | 'SCHEDULE' | 'ATTENDANCE' | 'EARNINGS
 
 export const TeacherDashboard: React.FC = () => {
   const { user, logout } = useAuth();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState<TeacherTab>('OVERVIEW');
+
+  useEffect(() => {
+    if (location.pathname.endsWith('/classes')) setActiveTab('CLASSES');
+    else if (location.pathname.endsWith('/schedule')) setActiveTab('SCHEDULE');
+    else if (location.pathname.endsWith('/attendance')) setActiveTab('ATTENDANCE');
+    else if (location.pathname.endsWith('/commissions')) setActiveTab('EARNINGS');
+    else if (location.pathname.endsWith('/devices')) setActiveTab('DEVICES');
+    else if (location.pathname === '/teacher') setActiveTab('OVERVIEW');
+  }, [location.pathname]);
   const [stats, setStats] = useState<any | null>(null);
   const [classes, setClasses] = useState<any[]>([]);
   const [devices, setDevices] = useState<any[]>([]);
