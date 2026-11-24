@@ -1,4 +1,4 @@
-﻿# ==============================================================================
+# ==============================================================================
 #  EDU CLICK – ONE-CLICK GITHUB REPOSITORY & PAGES DEPLOYMENT
 #  GitHub Account: Thanujnimsara
 #  Repository: edu-click-lms
