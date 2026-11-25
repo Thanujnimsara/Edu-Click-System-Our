@@ -31,9 +31,9 @@
       "purpose": "any maskable"
     },
     {
-      "src": "/brand/icon.svg",
+      "src": "/brand/logo.png",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/png"
     }
   ],
   "shortcuts": [

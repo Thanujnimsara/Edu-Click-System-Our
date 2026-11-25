@@ -5,9 +5,8 @@ const CACHE_NAME = 'edu-click-v4.0.0';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/brand/logo.svg',
-  '/brand/icon.svg',
-  '/brand/app-icon.svg',
+  '/brand/logo.png',
+  '/brand/icon.png',
   '/manifest.json'
 ];
 
