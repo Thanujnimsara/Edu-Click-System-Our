@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Globe, User as UserIcon, LogOut, Menu, X, Smartphone, Bell, BookOpen } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import logoImg from '../assets/logo.png';
 
 export const Navbar: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -32,8 +33,8 @@ export const Navbar: React.FC = () => {
           
           {/* Logo & Brand Identity */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#1E3A8A] to-[#14B8A6] p-0.5 shadow-md flex items-center justify-center transform group-hover:scale-105 transition-transform">
-              <img src="/brand/icon.svg" alt="EDU CLICK" className="w-10 h-10 object-contain rounded-xl" />
+            <div className="w-12 h-12 rounded-2xl bg-white/10 p-1 shadow-md flex items-center justify-center transform group-hover:scale-105 transition-transform">
+              <img src={logoImg} alt="EDU CLICK" className="w-10 h-10 object-contain rounded-xl" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">

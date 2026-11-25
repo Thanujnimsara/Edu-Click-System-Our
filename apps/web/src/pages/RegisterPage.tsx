@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { UserPlus, CheckCircle, AlertCircle, Sparkles, ArrowRight, ShieldCheck } from 'lucide-react';
 import { SRI_LANKA_DISTRICTS } from '@edu-click/shared';
+import logoImg from '../assets/logo.png';
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -82,6 +83,9 @@ export const RegisterPage: React.FC = () => {
         {step === 'FORM' ? (
           <>
             <div className="text-center space-y-2">
+              <div className="w-16 h-16 mx-auto rounded-3xl bg-white p-1.5 flex items-center justify-center shadow-lg border border-slate-100">
+                <img src={logoImg} alt="EDU CLICK" className="w-14 h-14 object-contain rounded-2xl" />
+              </div>
               <h2 className="text-2xl font-black text-[#142B4F]">Student Registration</h2>
               <p className="text-xs text-slate-500">Grade 1 through Grade 13 National Curriculum LMS</p>
             </div>

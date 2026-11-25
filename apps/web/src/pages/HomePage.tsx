@@ -7,6 +7,7 @@ import {
   ArrowRight, Star, Clock, Calendar, HelpCircle, Sparkles, Download, Layers
 } from 'lucide-react';
 import { GRADES, BRAND } from '@edu-click/shared';
+import logoImg from '../assets/logo.png';
 
 export const HomePage: React.FC = () => {
   const { t } = useTranslation();
@@ -245,7 +246,7 @@ export const HomePage: React.FC = () => {
       <footer className="bg-[#142B4F] text-white py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 border-b border-blue-900 pb-8 text-center md:text-left">
           <div className="flex items-center gap-3">
-            <img src="/brand/icon.svg" alt="EDU CLICK" className="w-10 h-10 object-contain rounded-xl" />
+            <img src={logoImg} alt="EDU CLICK" className="w-10 h-10 object-contain rounded-xl" />
             <div>
               <h3 className="font-black text-xl tracking-tight">EDU <span className="text-[#38BDF8]">CLICK</span></h3>
               <p className="text-[10px] text-[#14B8A6] font-semibold">One Platform. Every Device. Every Student.</p>

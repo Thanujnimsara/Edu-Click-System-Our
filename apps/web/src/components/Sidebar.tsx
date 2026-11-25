@@ -5,6 +5,7 @@ import {
   CreditCard, Smartphone, Settings, Users, Award, ShieldAlert
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import logoImg from '../assets/logo.png';
 
 export const Sidebar: React.FC = () => {
   const { user } = useAuth();
@@ -85,9 +86,12 @@ export const Sidebar: React.FC = () => {
       </div>
 
       {/* Footer Branding */}
-      <div className="pt-4 border-t border-slate-100 text-center">
-        <p className="text-[10px] font-bold text-slate-400">EDU CLICK v4.0.0</p>
-        <p className="text-[9px] text-[#14B8A6] font-semibold">100% Cross-Device Synced</p>
+      <div className="pt-4 border-t border-slate-100 flex flex-col items-center text-center gap-1.5">
+        <div className="flex items-center gap-2">
+          <img src={logoImg} alt="EDU CLICK" className="w-5 h-5 object-contain" />
+          <span className="text-xs font-black text-[#142B4F] tracking-tight">EDU CLICK</span>
+        </div>
+        <p className="text-[10px] font-bold text-slate-400">v4.0.0 • 100% Synced</p>
       </div>
     </aside>
   );

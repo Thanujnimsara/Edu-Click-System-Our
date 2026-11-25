@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getDesktopSystemInfo } from '../services/desktop';
+import logoImg from '../assets/logo.png';
 
 export const LoginPage: React.FC = () => {
   const { login } = useAuth();
@@ -261,8 +262,8 @@ export const LoginPage: React.FC = () => {
         
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-[#142B4F] to-[#2563EB] p-1 flex items-center justify-center shadow-lg">
-            <img src="/brand/icon.svg" alt="EDU CLICK" className="w-10 h-10 object-contain" />
+          <div className="w-16 h-16 mx-auto rounded-3xl bg-white p-1.5 flex items-center justify-center shadow-lg border border-slate-100">
+            <img src={logoImg} alt="EDU CLICK" className="w-14 h-14 object-contain rounded-2xl" />
           </div>
           <h2 className="text-2xl font-black text-[#142B4F]">Sign In to EDU CLICK</h2>
           <p className="text-xs text-slate-500">One account across Android, iOS, Windows, Mac & Web</p>

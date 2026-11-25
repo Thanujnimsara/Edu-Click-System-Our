@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Download, Printer, X, CheckCircle, ShieldCheck } from 'lucide-react';
 import { saveFileToDesktop, sendDesktopNotification } from '../services/desktop';
+import logoImg from '../assets/logo.png';
 
 interface ReceiptModalProps {
   receipt: {
@@ -82,8 +83,8 @@ Status:           VERIFIED & APPROVED
           </button>
 
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-white p-1 flex items-center justify-center">
-              <img src="/brand/icon.svg" alt="EDU CLICK" className="w-10 h-10 object-contain" />
+            <div className="w-12 h-12 rounded-2xl bg-white p-1 flex items-center justify-center shadow-sm">
+              <img src={logoImg} alt="EDU CLICK" className="w-10 h-10 object-contain rounded-xl" />
             </div>
             <div>
               <h2 className="text-xl font-black tracking-tight">EDU <span className="text-[#38BDF8]">CLICK</span></h2>
